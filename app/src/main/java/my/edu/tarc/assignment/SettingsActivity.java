@@ -8,7 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
@@ -25,35 +25,41 @@ import java.util.List;
 
 import my.edu.tarc.assignment.Model.User;
 
-public class LoginActivity extends AppCompatActivity {
+public class SettingsActivity extends AppCompatActivity {
     public static final String TAG = "my.edu.tarc.assignment";
-    private EditText editTextUsername, editTextPassword;
+    public static final String PROFILE_NAME = "name";
+    public static final String PROFILE_CONTACT_NO = "contact_no";
+    public static final String PROFILE_EMAIL = "email";
+    private static final int PROFILE_UPDATE_REQUEST = 111;
+    private User user = new User();
     private List<User> userList;
     private ProgressDialog pDialog;
     private RequestQueue queue;
+    private TextView textViewUsername, textViewName, textViewContact, textViewEmail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_settings);
 
-        editTextUsername = (EditText)findViewById(R.id.editTextUsername);
-        editTextPassword = (EditText)findViewById(R.id.editTextPassword);
+        textViewUsername = (TextView) findViewById(R.id.textViewUsername);
+        textViewName = (TextView)findViewById(R.id.textViewName);
+        textViewContact = (TextView)findViewById(R.id.textViewContact);
+        textViewEmail = (TextView)findViewById(R.id.textViewEmail);
 
-        pDialog = new ProgressDialog(LoginActivity.this);
+        pDialog = new ProgressDialog(SettingsActivity.this);
         userList = new ArrayList<>();
+        downloadUser(getApplicationContext(), getString(R.string.get_user_url));
 
-        SharedPreferences pref = getSharedPreferences("loginInfo", Context.MODE_PRIVATE);
-        if (pref.getBoolean("login_key", false)){
-            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-            startActivity(intent);
-        }
-
-        Button buttonSignIn = (Button)findViewById(R.id.buttonSignIn);
-        buttonSignIn.setOnClickListener(new View.OnClickListener() {
+        Button buttonEditProfile = (Button)findViewById(R.id.buttonEditProfile);
+        buttonEditProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                downloadUser(getApplicationContext(), getString(R.string.get_user_url));
+                Intent intent = new Intent(SettingsActivity.this, EditProfileActivity.class);
+                intent.putExtra(PROFILE_NAME, user.getName());
+                intent.putExtra(PROFILE_CONTACT_NO, user.getPhoneNo());
+                intent.putExtra(PROFILE_EMAIL, user.getEmail());
+                startActivityForResult(intent, PROFILE_UPDATE_REQUEST);
             }
         });
     }
@@ -63,7 +69,7 @@ public class LoginActivity extends AppCompatActivity {
         queue = Volley.newRequestQueue(context);
 
         if (!pDialog.isShowing())
-            pDialog.setMessage("Logging in...");
+            pDialog.setMessage("Loading...");
         pDialog.show();
 
         JsonArrayRequest jsonObjectRequest = new JsonArrayRequest(
@@ -84,7 +90,7 @@ public class LoginActivity extends AppCompatActivity {
                                 User user = new User(username,password,name,phoneNo,email,pin);
                                 userList.add(user);
                             }
-                            validateAccount();
+                            loadProfile();
                             if (pDialog.isShowing())
                                 pDialog.dismiss();
                         } catch (Exception e) {
@@ -108,32 +114,30 @@ public class LoginActivity extends AppCompatActivity {
         queue.add(jsonObjectRequest);
     }
 
-    private void validateAccount(){
-        boolean isValid = false;
-        String username = editTextUsername.getText().toString();
-        String password = editTextPassword.getText().toString();
+    private void loadProfile(){
+        SharedPreferences pref = getSharedPreferences("loginInfo", Context.MODE_PRIVATE);
+        String username = pref.getString("username", "");
         for (int i = 0; i < userList.size(); i++){
-            if (username.equalsIgnoreCase(userList.get(i).getUsername()) &&
-                    password.equals(userList.get(i).getPassword())){
-                isValid = true;
+            if (username.equalsIgnoreCase(userList.get(i).getUsername())){
+                user = userList.get(i);
+                textViewUsername.setText(getString(R.string.settings_username) + user.getUsername());
+                textViewName.setText(getString(R.string.settings_name) + user.getName());
+                textViewContact.setText(getString(R.string.settings_contact) + user.getPhoneNo());
+                textViewEmail.setText(getString(R.string.settings_email) + user.getEmail());
                 break;
             }
         }
-        if (isValid){
-            SharedPreferences pref = getSharedPreferences("loginInfo", Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = pref.edit();
-            editor.putString("username", username);
-            editor.putBoolean("login_key", true);
-            editor.apply();
-            Toast.makeText(getApplicationContext(),
-                    "Login Successful.",
-                    Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-            startActivity(intent);
-        } else {
-            Toast.makeText(getApplicationContext(),
-                    "Oops! Login failed, invalid username or password.",
-                    Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PROFILE_UPDATE_REQUEST && resultCode == RESULT_OK){
+            user.setName(data.getStringExtra(PROFILE_NAME));
+            user.setPhoneNo(data.getStringExtra(PROFILE_CONTACT_NO));
+            user.setEmail(data.getStringExtra(PROFILE_EMAIL));
+            textViewName.setText(getString(R.string.settings_name) + user.getName());
+            textViewContact.setText(getString(R.string.settings_contact) + user.getPhoneNo());
+            textViewEmail.setText(getString(R.string.settings_email) + user.getEmail());
         }
     }
 }

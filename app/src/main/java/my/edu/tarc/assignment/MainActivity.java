@@ -1,6 +1,7 @@
 package my.edu.tarc.assignment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -135,7 +136,8 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_wallet) {
 
         } else if (id == R.id.nav_settings) {
-
+            Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+            startActivity(intent);
         } else if (id == R.id.nav_logout) {
             SharedPreferences loginInfo = getSharedPreferences("loginInfo", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = loginInfo.edit();
