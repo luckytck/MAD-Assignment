@@ -1,6 +1,8 @@
 package my.edu.tarc.assignment;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -19,6 +21,12 @@ public class LoginActivity extends AppCompatActivity {
         editTextUsername = (EditText)findViewById(R.id.editTextUsername);
         editTextPassword = (EditText)findViewById(R.id.editTextPassword);
 
+        final SharedPreferences pref = getSharedPreferences("loginInfo", Context.MODE_PRIVATE);
+        if (pref.getBoolean("login_key", false)){
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            startActivity(intent);
+        }
+
         Button buttonSignIn = (Button)findViewById(R.id.buttonSignIn);
         buttonSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -26,6 +34,13 @@ public class LoginActivity extends AppCompatActivity {
                 String username = editTextUsername.getText().toString();
                 String password = editTextPassword.getText().toString();
                 if (username.equalsIgnoreCase("admin") && password.equals("admin123")){
+
+
+                    SharedPreferences.Editor editor = pref.edit();
+                    editor.putString("username", username);
+                    editor.putBoolean("login_key", true);
+                    editor.apply();
+
                     Toast.makeText(getApplicationContext(),
                             "Login Successful.",
                             Toast.LENGTH_SHORT).show();
