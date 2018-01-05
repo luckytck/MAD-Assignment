@@ -33,7 +33,8 @@
         <activity android:name=".EditProfileActivity"
             android:theme="@style/AppTheme"
             android:label="Edit Profile"
-            android:parentActivityName=".SettingsActivity"></activity>
+            android:parentActivityName=".SettingsActivity">
+        </activity>
     </application>
 
 </manifest>

@@ -19,6 +19,7 @@
     <string name="voucher">" Voucher"</string>
     <string name="scan_pay"><![CDATA[Scan & Pay]]></string>
     <string name="get_user_url">http://easy-app.000webhostapp.com/select_user.php</string>
+    <string name="update_profile_url">http://easy-app.000webhostapp.com/update_profile.php</string>
     <string name="account_details">ACCOUNT DETAILS</string>
     <string name="settings_username">"Username\t\t\t\t: "</string>
     <string name="settings_name">"Full Name\t\t\t\t: "</string>
