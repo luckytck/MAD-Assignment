@@ -16,9 +16,11 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    private TextView textViewWelcome;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +37,13 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        View header = navigationView.getHeaderView(0);
+        textViewWelcome = (TextView)header.findViewById(R.id.textViewWelcome);
+        SharedPreferences pref = getSharedPreferences("loginInfo", Context.MODE_PRIVATE);
+        String username = pref.getString("username", "");
+        textViewWelcome.setText(getString(R.string.welcome) + username.toUpperCase());
+
         //Image buttons for top up
         ImageButton imageButtonDigi = (ImageButton)findViewById(R.id.imageButtonDigi);
         imageButtonDigi.setOnClickListener(new View.OnClickListener() {

@@ -31,12 +31,6 @@ public class EditProfileActivity extends AppCompatActivity {
                 String name = editTextName.getText().toString();
                 String contactNo = editTextContactNo.getText().toString();
                 String email = editTextEmail.getText().toString();
-
-                Intent intent = getIntent();
-                intent.putExtra(SettingsActivity.PROFILE_NAME, name);
-                intent.putExtra(SettingsActivity.PROFILE_CONTACT_NO, contactNo);
-                intent.putExtra(SettingsActivity.PROFILE_EMAIL, email);
-                setResult(RESULT_OK, intent);
                 finish();
             }
         });

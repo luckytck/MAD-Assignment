@@ -22,6 +22,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import my.edu.tarc.assignment.Model.User;
 
@@ -59,7 +61,7 @@ public class SettingsActivity extends AppCompatActivity {
                 intent.putExtra(PROFILE_NAME, user.getName());
                 intent.putExtra(PROFILE_CONTACT_NO, user.getPhoneNo());
                 intent.putExtra(PROFILE_EMAIL, user.getEmail());
-                startActivityForResult(intent, PROFILE_UPDATE_REQUEST);
+                startActivity(intent);
             }
         });
     }
@@ -87,7 +89,8 @@ public class SettingsActivity extends AppCompatActivity {
                                 String phoneNo = userResponse.getString("phoneNo");
                                 String email = userResponse.getString("email");
                                 int pin = userResponse.getInt("pin");
-                                User user = new User(username,password,name,phoneNo,email,pin);
+                                double balance = userResponse.getDouble("balance");
+                                User user = new User(username,password,name,phoneNo,email,pin, balance);
                                 userList.add(user);
                             }
                             loadProfile();
@@ -120,24 +123,28 @@ public class SettingsActivity extends AppCompatActivity {
         for (int i = 0; i < userList.size(); i++){
             if (username.equalsIgnoreCase(userList.get(i).getUsername())){
                 user = userList.get(i);
-                textViewUsername.setText(getString(R.string.settings_username) + user.getUsername());
-                textViewName.setText(getString(R.string.settings_name) + user.getName());
+                textViewUsername.setText(getString(R.string.settings_username) + capitalize(user.getUsername()));
+                textViewName.setText(getString(R.string.settings_name) + capitalize(user.getName()));
                 textViewContact.setText(getString(R.string.settings_contact) + user.getPhoneNo());
-                textViewEmail.setText(getString(R.string.settings_email) + user.getEmail());
+                textViewEmail.setText(getString(R.string.settings_email) + capitalize(user.getEmail()));
                 break;
             }
         }
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == PROFILE_UPDATE_REQUEST && resultCode == RESULT_OK){
-            user.setName(data.getStringExtra(PROFILE_NAME));
-            user.setPhoneNo(data.getStringExtra(PROFILE_CONTACT_NO));
-            user.setEmail(data.getStringExtra(PROFILE_EMAIL));
-            textViewName.setText(getString(R.string.settings_name) + user.getName());
-            textViewContact.setText(getString(R.string.settings_contact) + user.getPhoneNo());
-            textViewEmail.setText(getString(R.string.settings_email) + user.getEmail());
+    protected void onResume() {
+        downloadUser(getApplicationContext(), getString(R.string.get_user_url));
+        super.onResume();
+    }
+
+    private String capitalize(String capString){
+        StringBuffer capBuffer = new StringBuffer();
+        Matcher capMatcher = Pattern.compile("([a-z\\@\\.])([a-z\\@\\.]*)", Pattern.CASE_INSENSITIVE).matcher(capString);
+        while (capMatcher.find()){
+            capMatcher.appendReplacement(capBuffer, capMatcher.group(1).toUpperCase() + capMatcher.group(2).toLowerCase());
         }
+
+        return capMatcher.appendTail(capBuffer).toString();
     }
 }

@@ -81,7 +81,8 @@ public class LoginActivity extends AppCompatActivity {
                                 String phoneNo = userResponse.getString("phoneNo");
                                 String email = userResponse.getString("email");
                                 int pin = userResponse.getInt("pin");
-                                User user = new User(username,password,name,phoneNo,email,pin);
+                                double balance = userResponse.getDouble("balance");
+                                User user = new User(username,password,name,phoneNo,email,pin, balance);
                                 userList.add(user);
                             }
                             validateAccount();

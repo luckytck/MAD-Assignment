@@ -11,17 +11,19 @@ public class User {
     private String phoneNo;
     private String email;
     private int pin;
+    private double balance;
 
     public User() {
     }
 
-    public User(String username, String password, String name, String phoneNo, String email, int pin) {
+    public User(String username, String password, String name, String phoneNo, String email, int pin, double balance) {
         this.username = username;
         this.password = password;
         this.name = name;
         this.phoneNo = phoneNo;
         this.email = email;
         this.pin = pin;
+        this.balance = balance;
     }
 
     public String getUsername() {
@@ -72,6 +74,14 @@ public class User {
         this.pin = pin;
     }
 
+    public double getBalance() {
+        return balance;
+    }
+
+    public void setBalance(double balance) {
+        this.balance = balance;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -81,6 +91,7 @@ public class User {
                 ", phoneNo='" + phoneNo + '\'' +
                 ", email='" + email + '\'' +
                 ", pin=" + pin +
+                ", balance=" + balance +
                 '}';
     }
 }
